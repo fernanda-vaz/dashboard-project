@@ -1,0 +1,241 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Gerenciamento de Tarefas",
+    "description": "API para criar, atualizar, listar e excluir tarefas.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Servidor local"
+    }
+  ],
+  "paths": {
+    "/api/users": {
+      "get": {
+        "summary": "Listar todos os usuários",
+        "description": "Retorna uma lista de todos os usuários cadastrados, excluindo suas senhas.",
+        "responses": {
+          "200": {
+            "description": "Lista de usuários",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+
+    "/api/tasks": {
+      "get": {
+        "summary": "Listar todas as tarefas",
+        "description": "Retorna uma lista de todas as tarefas.",
+        "responses": {
+          "200": {
+            "description": "Lista de tarefas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar uma nova tarefa",
+        "description": "Adiciona uma nova tarefa ao banco de dados.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Título da tarefa"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Descrição da tarefa"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["Pendente", "Em andamento", "Concluída"],
+                    "description": "Status da tarefa"
+                  },
+                  "assignedTo": {
+                    "type": "string",
+                    "description": "ID do usuário atribuído. Deve ser um usuário existente"
+                  },
+                  "dueDate": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Data de entrega"
+                  }
+                },
+                "required": ["title", "assignedTo"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tarefa criada com sucesso"
+          },
+          "400": {
+            "description": "Usuário atribuído não encontrado"
+          }
+        }
+      }
+    },
+    "/api/tasks/{id}": {
+      "put": {
+        "summary": "Atualizar uma tarefa",
+        "description": "Atualiza uma tarefa existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID da tarefa",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tarefa atualizada com sucesso"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Excluir uma tarefa",
+        "description": "Remove uma tarefa pelo ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID da tarefa",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tarefa excluída com sucesso"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID da tarefa"
+          },
+          "title": {
+            "type": "string",
+            "description": "Título da tarefa"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição da tarefa"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status da tarefa"
+          },
+          "assignedTo": {
+            "type": "string",
+            "description": "Pessoa atribuída à tarefa"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Data de entrega"
+          }
+        }
+      },
+      "TaskInput": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Título da tarefa"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição da tarefa"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status da tarefa"
+          },
+          "assignedTo": {
+            "type": "string",
+            "description": "Pessoa atribuída à tarefa"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Data de entrega"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do usuário"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do usuário"
+          },
+          "email": {
+            "type": "string",
+            "description": "E-mail do usuário"
+          }
+        }
+      }
+    }
+  }
+}
